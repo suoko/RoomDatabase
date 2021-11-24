@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class SampleEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    var id: Int,
+    var id: Int? = null,
 
     @ColumnInfo(name = "name")
     var name: String,
@@ -19,6 +19,6 @@ data class SampleEntity(
     @ColumnInfo(name = "imgUrl")
     var imgUrl: String,
 
-    @ColumnInfo(name = "createdDate")
+    @ColumnInfo(name = "s")
     var createdDate: String
 )

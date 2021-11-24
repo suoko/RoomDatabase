@@ -31,6 +31,18 @@ class SampleViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
+    /*fun viewSample(item: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.viewSample(item )
+        }
+    }
+
+    fun viewAllSample(item: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.viewAllSample(item)
+        }
+    }*/
+
     fun deleteSample(item: SampleEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteSample(item = item)
@@ -39,7 +51,7 @@ class SampleViewModel(application: Application): AndroidViewModel(application) {
 
     fun deleteAllRecord() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteAllRecord()
+            repository.deleteAll()
         }
     }
 }

@@ -11,6 +11,14 @@ class SampleRepository(private val sampleDao: SampleDao) {
         sampleDao.insert(item)
     }
 
+    suspend fun viewAllSample(item: List<SampleEntity>) {
+        sampleDao.getAllData()
+    }
+
+    suspend fun viewSample(item: SampleEntity) {
+        sampleDao.getById(id = item.id)
+    }
+
     suspend fun updateSample(item: SampleEntity) {
         sampleDao.update(item)
     }
@@ -19,7 +27,7 @@ class SampleRepository(private val sampleDao: SampleDao) {
         sampleDao.delete(item)
     }
 
-    suspend fun deleteAllRecord() {
+    suspend fun deleteAll() {
         sampleDao.deleteAllRecord()
     }
 }
