@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,10 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,19 +27,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jetpack.roomdatabase.entity.SampleEntity
 import com.jetpack.roomdatabase.viewmodel.SampleViewModel
 import com.jetpack.roomdatabase.viewmodel.SampleViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : ComponentActivity() {
+    private val myViewmodel by viewModels<MyViewmodel2>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val scaffoldState = rememberScaffoldState()
+            val scope = rememberCoroutineScope()
             /*val context = LocalContext.current
             val sampleViewModel: SampleViewModel = viewModel(
                 factory = SampleViewModelFactory(context.applicationContext as Application)
             )
             sampleViewModel.addSample(insertSampleData)*/
-                CallDatabase()
+            Scaffold(scaffoldState = scaffoldState) {
+                CallDatabase(myViewmodel = myViewmodel, scope, scaffoldState)
+            }
         }
     }
 }
@@ -70,20 +75,38 @@ data class User(
 )
 
 @Composable
-fun CallDatabase() {
-
+fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState: ScaffoldState) {
     val context = LocalContext.current
     val sampleViewModel: SampleViewModel = viewModel(
         factory = SampleViewModelFactory(context.applicationContext as Application)
     )
     //sampleViewModel.addSample(insertSampleData)
-
     Box(modifier = Modifier.fillMaxSize()){
         val user = User(1, "dd")
         val users2 = remember {
             mutableStateListOf(user)
         }
+        MyTextField(
+            label = "User Name",
+            value = myViewmodel.text,
+            onValueChanged = { myViewmodel.onTextChanged(it) }
+        )
         UserList(users = users2)
+
+        Button(
+            onClick = {
+                scope.launch {
+                    scaffoldState
+                        .snackbarHostState
+                        .showSnackbar("Hello, ${myViewmodel.text}")
+                }
+            },
+            modifier = Modifier.align(Alignment.TopEnd),
+            enabled = myViewmodel.text.isNotBlank() /*&& myViewmodel.password.isNotBlank()*/,
+        ) {
+            Text(text = "Submit")
+        }
+
         Button(
             onClick = {
             sampleViewModel.addSample(insertSampleDataX)
@@ -106,10 +129,7 @@ fun CallDatabase() {
         ) {
             Text(text = "Delete All" )
         }
-
-
     }
-
 }
 
 /*@Composable
@@ -134,7 +154,9 @@ fun MainContent(){
 @Composable
 fun UserList(users: List<User>){
 
-    LazyColumn{
+    LazyColumn (modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 100.dp)){
         items(users){ user ->
             UserCard(User = user)
 
@@ -174,8 +196,6 @@ fun UserCard(User: User)
                 Text(text =  User.uname)
                 Button(onClick = { /*TODO*/ }) {
                     Text(text = "My button")
-
-
                 }
             }
         }
@@ -195,7 +215,7 @@ fun DefaultPreview(){
 }
 */
 
-/*
+
 @Composable
 fun MyTextField(
     label: String,
@@ -215,6 +235,7 @@ fun MyTextField(
 
 
 class MyViewmodel2 : ViewModel() {
+
     //state
     var text by mutableStateOf("")
     var password by mutableStateOf("")
@@ -228,4 +249,3 @@ class MyViewmodel2 : ViewModel() {
         password = newString
     }
 }
-*/
