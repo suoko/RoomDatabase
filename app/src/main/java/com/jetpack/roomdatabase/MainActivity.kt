@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,8 +21,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jetpack.roomdatabase.entity.SampleEntity
 import com.jetpack.roomdatabase.viewmodel.SampleViewModel
@@ -45,9 +49,9 @@ class MainActivity : ComponentActivity() {
 val date = SimpleDateFormat("dd-MM-yyyy")
 val strDate: String = date.format(Date())
 
-val insertSampleData = listOf(
+/*val insertSampleData = listOf(
     SampleEntity(1, "Gabriele", "Make It Easy Sample 1", "Image Url 1", strDate),
-    /*SampleEntity(2, "Sample 2", "Make It Easy Sample 2", "Image Url 2", strDate),
+    SampleEntity(2, "Sample 2", "Make It Easy Sample 2", "Image Url 2", strDate),
     SampleEntity(3, "Sample 3", "Make It Easy Sample 3", "Image Url 3", strDate),
     SampleEntity(4, "Sample 4", "Make It Easy Sample 4", "Image Url 4", strDate),
     SampleEntity(5, "Sample 5", "Make It Easy Sample 5", "Image Url 5", strDate),
@@ -55,29 +59,15 @@ val insertSampleData = listOf(
     SampleEntity(7, "Sample 7", "Make It Easy Sample 7", "Image Url 7", strDate),
     SampleEntity(8, "Sample 8", "Make It Easy Sample 8", "Image Url 8", strDate),
     SampleEntity(9, "Sample 9", "Make It Easy Sample 9", "Image Url 9", strDate),
-    SampleEntity(10, "Sample 10", "Make It Easy Sample 10", "Image Url 10", strDate),*/
-)
-
-val insertSampleData2 = listOf(
-    SampleEntity(2, "Gabriele", "Make It Easy Sample 2", "Image Url 2", strDate),
-    /*SampleEntity(2, "Sample 2", "Make It Easy Sample 2", "Image Url 2", strDate),
-    SampleEntity(3, "Sample 3", "Make It Easy Sample 3", "Image Url 3", strDate),
-    SampleEntity(4, "Sample 4", "Make It Easy Sample 4", "Image Url 4", strDate),
-    SampleEntity(5, "Sample 5", "Make It Easy Sample 5", "Image Url 5", strDate),
-    SampleEntity(6, "Sample 6", "Make It Easy Sample 6", "Image Url 6", strDate),
-    SampleEntity(7, "Sample 7", "Make It Easy Sample 7", "Image Url 7", strDate),
-    SampleEntity(8, "Sample 8", "Make It Easy Sample 8", "Image Url 8", strDate),
-    SampleEntity(9, "Sample 9", "Make It Easy Sample 9", "Image Url 9", strDate),
-    SampleEntity(10, "Sample 10", "Make It Easy Sample 10", "Image Url 10", strDate),*/
-)
-
+    SampleEntity(10, "Sample 10", "Make It Easy Sample 10", "Image Url 10", strDate),
+)*/
 val insertSampleDataX = listOf(
     SampleEntity(name="Gabriele2", desc="Make It Easy Sample 2", imgUrl="Image Url 2", createdDate=strDate),
 )
 data class User(
-    val id: Int
+    val id: Int,
+    val uname: String
 )
-
 
 @Composable
 fun CallDatabase() {
@@ -89,7 +79,7 @@ fun CallDatabase() {
     //sampleViewModel.addSample(insertSampleData)
 
     Box(modifier = Modifier.fillMaxSize()){
-        val user = User(1)
+        val user = User(1, "dd")
         val users2 = remember {
             mutableStateListOf(user)
         }
@@ -97,7 +87,7 @@ fun CallDatabase() {
         Button(
             onClick = {
             sampleViewModel.addSample(insertSampleDataX)
-            users2.add(User(1))
+            users2.add(User(1, "kk"))
                          },
             modifier = Modifier
             .padding(25.dp)
@@ -181,7 +171,7 @@ fun UserCard(User: User)
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text =  "My card")
+                Text(text =  User.uname)
                 Button(onClick = { /*TODO*/ }) {
                     Text(text = "My button")
 
@@ -201,6 +191,41 @@ fun DefaultPreview(){
         color = MaterialTheme.colors.background
     ) {
         CallDatabase()
+    }
+}
+*/
+
+/*
+@Composable
+fun MyTextField(
+    label: String,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    value: String,
+    onValueChanged: (String) -> Unit,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChanged,
+        label = { Text(text = label) },
+        visualTransformation = visualTransformation,
+        keyboardOptions = keyboardOptions
+    )
+}
+
+
+class MyViewmodel2 : ViewModel() {
+    //state
+    var text by mutableStateOf("")
+    var password by mutableStateOf("")
+
+    // events
+    fun onTextChanged(newString: String) {
+        text = newString
+    }
+
+    fun onPasswordChanged(newString: String) {
+        password = newString
     }
 }
 */

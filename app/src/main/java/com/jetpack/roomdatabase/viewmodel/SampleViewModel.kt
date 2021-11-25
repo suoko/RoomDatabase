@@ -31,13 +31,13 @@ class SampleViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    /*fun viewSample(item: Int) {
+/*    fun viewSample(item: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.viewSample(item )
+            repository.viewSample(item)
         }
-    }
+    }*/
 
-    fun viewAllSample(item: Int) {
+/*    fun viewAllSample(item: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.viewAllSample(item)
         }
