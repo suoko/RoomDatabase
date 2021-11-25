@@ -65,12 +65,11 @@ val strDate: String = date.format(Date())
     SampleEntity(8, "Sample 8", "Make It Easy Sample 8", "Image Url 8", strDate),
     SampleEntity(9, "Sample 9", "Make It Easy Sample 9", "Image Url 9", strDate),
     SampleEntity(10, "Sample 10", "Make It Easy Sample 10", "Image Url 10", strDate),
-)*/
 val insertSampleDataX = listOf(
     SampleEntity(name="Gabriele2", desc="Make It Easy Sample 2", imgUrl="Image Url 2", createdDate=strDate),
-)
+)*/
 data class User(
-    val id: Int,
+    val id: Int?,
     val uname: String
 )
 
@@ -80,12 +79,17 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
     val sampleViewModel: SampleViewModel = viewModel(
         factory = SampleViewModelFactory(context.applicationContext as Application)
     )
+    val insertSampleDataY = listOf(
+        SampleEntity(name="${myViewmodel.text}", desc="Make It Easy Sample 2", imgUrl="Image Url 2", createdDate=strDate),
+    )
+
     //sampleViewModel.addSample(insertSampleData)
     Box(modifier = Modifier.fillMaxSize()){
-        val user = User(1, "dd")
+        val user = User(null, "")
         val users2 = remember {
             mutableStateListOf(user)
         }
+        //if (users2?.first().uname.isBlank() ) {users2.clear()}
         MyTextField(
             label = "User Name",
             value = myViewmodel.text,
@@ -100,6 +104,8 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
                         .snackbarHostState
                         .showSnackbar("Hello, ${myViewmodel.text}")
                 }
+                if (myViewmodel.text.isNotBlank())  { users2.add(User(id = 1, uname = "${myViewmodel.text}"))}
+                sampleViewModel.addSample(insertSampleDataY)
             },
             modifier = Modifier.align(Alignment.TopEnd),
             enabled = myViewmodel.text.isNotBlank() /*&& myViewmodel.password.isNotBlank()*/,
@@ -107,7 +113,7 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
             Text(text = "Submit")
         }
 
-        Button(
+        /*Button(
             onClick = {
             sampleViewModel.addSample(insertSampleDataX)
             users2.add(User(1, "kk"))
@@ -117,7 +123,7 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
             .align(Alignment.BottomCenter)
         ) {
             Text(text = "Add one" )
-        }
+        }*/
         Button(
             onClick = {
                 sampleViewModel.deleteAllRecord()
@@ -158,7 +164,7 @@ fun UserList(users: List<User>){
         .fillMaxSize()
         .padding(top = 100.dp)){
         items(users){ user ->
-            UserCard(User = user)
+            if (user.uname.isNotEmpty()) {UserCard(User = user)}
 
         }
     }
@@ -201,7 +207,6 @@ fun UserCard(User: User)
         }
     }
 }
-
 /*
 @Preview(showBackground = true)
 @Composable
@@ -214,7 +219,6 @@ fun DefaultPreview(){
     }
 }
 */
-
 
 @Composable
 fun MyTextField(
@@ -235,16 +239,13 @@ fun MyTextField(
 
 
 class MyViewmodel2 : ViewModel() {
-
     //state
     var text by mutableStateOf("")
     var password by mutableStateOf("")
-
     // events
     fun onTextChanged(newString: String) {
         text = newString
     }
-
     fun onPasswordChanged(newString: String) {
         password = newString
     }
