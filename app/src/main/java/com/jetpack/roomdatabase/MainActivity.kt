@@ -2,6 +2,7 @@ package com.jetpack.roomdatabase
 
 import android.app.Application
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
             )
             sampleViewModel.addSample(insertSampleData)*/
             Scaffold(scaffoldState = scaffoldState) {
-                CallDatabase(myViewmodel = myViewmodel, scope, scaffoldState)
+                CallDatabase(myViewmodel = myViewmodel/*, scope, scaffoldState*/)
             }
         }
     }
@@ -72,9 +73,10 @@ data class User(
     val id: Int?,
     val uname: String
 )
+val user = User(null, "")
 
 @Composable
-fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState: ScaffoldState) {
+fun CallDatabase(myViewmodel: MyViewmodel2/*, scope: CoroutineScope, scaffoldState: ScaffoldState*/) {
     val context = LocalContext.current
     val sampleViewModel: SampleViewModel = viewModel(
         factory = SampleViewModelFactory(context.applicationContext as Application)
@@ -82,37 +84,45 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
     val insertSampleDataY = listOf(
         SampleEntity(name="${myViewmodel.text}", desc="Make It Easy Sample 2", imgUrl="Image Url 2", createdDate=strDate),
     )
+    val users2 = remember {
+        mutableStateListOf(user)
+    }
 
     //sampleViewModel.addSample(insertSampleData)
     Box(modifier = Modifier.fillMaxSize()){
-        val user = User(null, "")
-        val users2 = remember {
-            mutableStateListOf(user)
-        }
+
+
         //if (users2?.first().uname.isBlank() ) {users2.clear()}
         MyTextField(
             label = "User Name",
             value = myViewmodel.text,
             onValueChanged = { myViewmodel.onTextChanged(it) }
         )
-        UserList(users = users2)
+        UserList(listOfOsers = users2)
 
         Button(
             onClick = {
-                scope.launch {
+                /*scope.launch {
                     scaffoldState
                         .snackbarHostState
                         .showSnackbar("Hello, ${myViewmodel.text}")
+                }*/
+                if (myViewmodel.text.isNotBlank())  {
+                    val lastItem =  users2.last().id
+                    users2.add(User(id = if (lastItem != null) lastItem +1 else 1, uname = "${myViewmodel.text}"))
                 }
-                if (myViewmodel.text.isNotBlank())  { users2.add(User(id = 1, uname = "${myViewmodel.text}"))}
                 sampleViewModel.addSample(insertSampleDataY)
             },
-            modifier = Modifier.align(Alignment.TopEnd),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .width(112.dp)
+                .height(30.dp),
+
             enabled = myViewmodel.text.isNotBlank() /*&& myViewmodel.password.isNotBlank()*/,
         ) {
             Text(text = "Submit")
         }
-
+        Spacer(modifier = Modifier.height(8.dp))
         /*Button(
             onClick = {
             sampleViewModel.addSample(insertSampleDataX)
@@ -130,11 +140,35 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
                 users2.clear()
             },
             modifier = Modifier
-                .padding(25.dp)
-                .align(Alignment.BottomEnd)
+                //.padding(25.dp)
+                .align(Alignment.TopEnd)
+                .padding(vertical = 32.dp)
+                .width(112.dp)
+                .height(30.dp)
         ) {
             Text(text = "Delete All" )
         }
+        /*Button(
+            onClick = {
+                //sampleViewModel.deleteAllRecord()
+                users2.removeLast()
+            },
+            modifier = Modifier
+                .padding(25.dp)
+                .align(Alignment.BottomCenter)
+        ) {
+            Text(text = "Delete one" )
+        }
+        Button(
+            onClick = {
+
+                },
+            modifier = Modifier
+                .padding(25.dp)
+                .align(Alignment.BottomStart)
+        ) {
+            Text(text = "Show in log" )
+        }*/
     }
 }
 
@@ -158,21 +192,23 @@ fun MainContent(){
 }*/
 
 @Composable
-fun UserList(users: List<User>){
+fun UserList(listOfOsers: MutableList<User>){
 
     LazyColumn (modifier = Modifier
         .fillMaxSize()
         .padding(top = 100.dp)){
-        items(users){ user ->
-            if (user.uname.isNotEmpty()) {UserCard(User = user)}
-
+        items(listOfOsers){ user ->
+            if (user.uname.isNotEmpty()) {UserCard(CardUser = user, myViewmodel = MyViewmodel2(), listOfOsers)}
         }
     }
 }
 
 @Composable
-fun UserCard(User: User)
+fun UserCard(CardUser: User, myViewmodel: MyViewmodel2, listOfOsers: MutableList<User>)
 {
+    /*val users2 = remember {
+        mutableStateListOf(user)
+    }*/
     Card (
         elevation = 14.dp,
         modifier = Modifier
@@ -199,26 +235,17 @@ fun UserCard(User: User)
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text =  User.uname)
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "My button")
+                Text(text =  "${CardUser.id} + ${CardUser.uname}")
+                Button(onClick = { listOfOsers.remove(CardUser) /*users2.add(*/ }) {
+                    Text(text = "Delete")
                 }
             }
         }
     }
 }
-/*
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview(){
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.background
-    ) {
-        CallDatabase()
-    }
-}
-*/
+
+
+
 
 @Composable
 fun MyTextField(
@@ -241,12 +268,21 @@ fun MyTextField(
 class MyViewmodel2 : ViewModel() {
     //state
     var text by mutableStateOf("")
-    var password by mutableStateOf("")
+    //var password by mutableStateOf("")
     // events
     fun onTextChanged(newString: String) {
         text = newString
     }
-    fun onPasswordChanged(newString: String) {
+    /*fun onPasswordChanged(newString: String) {
         password = newString
-    }
+    }*/
 }
+
+/*
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview(){
+    setContent {
+        CallDatabase()
+    }
+}*/
