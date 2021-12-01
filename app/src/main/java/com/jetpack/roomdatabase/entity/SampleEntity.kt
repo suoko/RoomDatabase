@@ -22,7 +22,7 @@ data class SampleEntity(
     @ColumnInfo(name = "imgUrl")
     var imgUrl: String,
 
-    @ColumnInfo(name = "s")
+    @ColumnInfo(name = "date")
     var createdDate: String
 )
 
