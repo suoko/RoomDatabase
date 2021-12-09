@@ -52,15 +52,15 @@ class MainActivity : ComponentActivity() {
 val date = SimpleDateFormat("dd-MM-yyyy")
 val strDate: String = date.format(Date())
 
-data class User(
+/*data class User(
     val uid: Int?,
     val uname: String,
     val udesc: String,
     val uimgUrl: String,
     val ucreateDate: String
-)
-val user = User(null, "", "", "","")
-//val user = SampleEntity(id = null, "","","","")
+)*/
+//val user = User(null, "", "", "","")
+val user = SampleEntity(id = null, "","","","")
 
 @Composable
 fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState: ScaffoldState) {
@@ -104,8 +104,8 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
                         .showSnackbar("Hello, ${myViewmodel.text}")
                 }*/
                 if (myViewmodel.text.isNotBlank())  {
-                    val lastItem =  users2.last().uid
-                    users2.add(User(uid = if (lastItem != null) lastItem +1 else 1, uname = "${myViewmodel.text}", "${myViewmodel.description}", uimgUrl = "${myViewmodel.imgUrl}", ucreateDate = "${myViewmodel.date}"))
+                    val lastItem =  users2.last().id
+                    users2.add(SampleEntity(id = if (lastItem != null) lastItem +1 else 1, name = "${myViewmodel.text}", desc = "${myViewmodel.description}", imgUrl = "${myViewmodel.imgUrl}", createdDate = "${myViewmodel.date}"))
                 }
                 sampleViewModel.addSample(insertSampleDataY)
             },
@@ -171,22 +171,22 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
 
 
 @Composable
-fun UserList(listOfOsers: MutableList<User>, sampleViewModel: SampleViewModel){
+fun UserList(listOfOsers: MutableList<SampleEntity>, sampleViewModel: SampleViewModel){
 
     LazyColumn (modifier = Modifier
         .fillMaxSize()
         .padding(top = 120.dp)){
         items(listOfOsers){ user ->
-            if (user.uname.isNotEmpty()) {UserCard(CardUser = user, myViewmodel = MyViewmodel2(), listOfOsers, sampleViewModel)}
+            if (user.name.isNotEmpty()) {UserCard(CardUser = user, myViewmodel = MyViewmodel2(), listOfOsers, sampleViewModel)}
         }
     }
 }
 
 @Composable
 fun UserCard(
-    CardUser: User,
+    CardUser: SampleEntity,
     myViewmodel: MyViewmodel2,
-    listOfOsers: MutableList<User>,
+    listOfOsers: MutableList<SampleEntity>,
     sampleViewModel: SampleViewModel
 )
 {
@@ -222,23 +222,22 @@ fun UserCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text =  "${CardUser.uid}")
-                Text(text =  "${CardUser.uname}")
-                Text(text =  "${CardUser.udesc}")
+                Text(text =  "${CardUser.id}")
+                Text(text =  "${CardUser.name}")
+                Text(text =  "${CardUser.desc}")
                 Button(onClick = {
                     listOfOsers.remove(CardUser)
                     sampleViewModel.deleteSample(
                         item = SampleEntity(
-                            CardUser.uid,
-                            CardUser.uname,
-                            CardUser.udesc,
-                            CardUser.uimgUrl,
-                            CardUser.ucreateDate,
+                            CardUser.id,
+                            CardUser.name,
+                            CardUser.desc,
+                            CardUser.imgUrl,
+                            CardUser.createdDate,
                         )
                     )  /// GO ON HERE
                 } ) {
                     Text(text = "Delete")
-
                 }
             }
         }
