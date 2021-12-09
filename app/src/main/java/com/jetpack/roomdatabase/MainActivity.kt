@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,7 +42,6 @@ class MainActivity : ComponentActivity() {
             val sampleViewModel: SampleViewModel = viewModel(
                 factory = SampleViewModelFactory(context.applicationContext as Application)
             )
-            //sampleViewModel.addSample(insertSampleData)
             Scaffold(scaffoldState = scaffoldState) {
                 CallDatabase(myViewmodel = myViewmodel, scope, scaffoldState)
             }
@@ -52,26 +52,15 @@ class MainActivity : ComponentActivity() {
 val date = SimpleDateFormat("dd-MM-yyyy")
 val strDate: String = date.format(Date())
 
-/*val insertSampleData = listOf(
-    SampleEntity(1, "Gabriele", "Make It Easy Sample 1", "Image Url 1", strDate),
-    SampleEntity(2, "Sample 2", "Make It Easy Sample 2", "Image Url 2", strDate),
-    SampleEntity(3, "Sample 3", "Make It Easy Sample 3", "Image Url 3", strDate),
-    SampleEntity(4, "Sample 4", "Make It Easy Sample 4", "Image Url 4", strDate),
-    SampleEntity(5, "Sample 5", "Make It Easy Sample 5", "Image Url 5", strDate),
-    SampleEntity(6, "Sample 6", "Make It Easy Sample 6", "Image Url 6", strDate),
-    SampleEntity(7, "Sample 7", "Make It Easy Sample 7", "Image Url 7", strDate),
-    SampleEntity(8, "Sample 8", "Make It Easy Sample 8", "Image Url 8", strDate),
-    SampleEntity(9, "Sample 9", "Make It Easy Sample 9", "Image Url 9", strDate),
-    SampleEntity(10, "Sample 10", "Make It Easy Sample 10", "Image Url 10", strDate),
-val insertSampleDataX = listOf(
-    SampleEntity(name="Gabriele2", desc="Make It Easy Sample 2", imgUrl="Image Url 2", createdDate=strDate),
-)*/
 data class User(
     val uid: Int?,
     val uname: String,
-    val udesc: String
+    val udesc: String,
+    val uimgUrl: String,
+    val ucreateDate: String
 )
-val user = User(null, "", "")
+val user = User(null, "", "", "","")
+//val user = SampleEntity(id = null, "","","","")
 
 @Composable
 fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState: ScaffoldState) {
@@ -87,7 +76,6 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
         mutableStateListOf(user)
     }
 
-    //sampleViewModel.addSample(insertSampleData)
     Box(modifier = Modifier.fillMaxSize()){
         Column {
 
@@ -117,7 +105,7 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
                 }*/
                 if (myViewmodel.text.isNotBlank())  {
                     val lastItem =  users2.last().uid
-                    users2.add(User(uid = if (lastItem != null) lastItem +1 else 1, uname = "${myViewmodel.text}", "${myViewmodel.description}"))
+                    users2.add(User(uid = if (lastItem != null) lastItem +1 else 1, uname = "${myViewmodel.text}", "${myViewmodel.description}", uimgUrl = "${myViewmodel.imgUrl}", ucreateDate = "${myViewmodel.date}"))
                 }
                 sampleViewModel.addSample(insertSampleDataY)
             },
@@ -180,24 +168,7 @@ fun CallDatabase(myViewmodel: MyViewmodel2, scope: CoroutineScope, scaffoldState
     }
 }
 
-/*@Composable
-fun MainContent(){
-    Box(modifier = Modifier.fillMaxSize()){
-        val user = User(1)
 
-        val users2 = remember {
-            mutableStateListOf(user)
-        }
-        UserList(users = users2)
-        Button(onClick = { users2.add(User(1)) }, modifier = Modifier
-            .padding(25.dp)
-            .align(Alignment.BottomCenter)
-        ) {
-            Text(text = "Add one" )
-        }
-    }
-
-}*/
 
 @Composable
 fun UserList(listOfOsers: MutableList<User>, sampleViewModel: SampleViewModel){
@@ -256,7 +227,15 @@ fun UserCard(
                 Text(text =  "${CardUser.udesc}")
                 Button(onClick = {
                     listOfOsers.remove(CardUser)
-                    sampleViewModel.addSample(insertSampleDataTest)   /// GO ON HERE
+                    sampleViewModel.deleteSample(
+                        item = SampleEntity(
+                            CardUser.uid,
+                            CardUser.uname,
+                            CardUser.udesc,
+                            CardUser.uimgUrl,
+                            CardUser.ucreateDate,
+                        )
+                    )  /// GO ON HERE
                 } ) {
                     Text(text = "Delete")
 
@@ -291,6 +270,8 @@ class MyViewmodel2 : ViewModel() {
     //state
     var text by mutableStateOf("")
     var description by mutableStateOf("")
+    var imgUrl by mutableStateOf("")
+    var date by mutableStateOf("")
     // events
     fun onTextChanged(newString: String) {
         text = newString
@@ -298,13 +279,40 @@ class MyViewmodel2 : ViewModel() {
     fun onPasswordChanged(newString: String) {
         description = newString
     }
+    fun onimgUrlChanged(newString: String) {
+        imgUrl = newString
+    }
+    fun onDateChanged(newString: String) {
+        date = newString
+    }
 }
+
 
 /*
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview(){
-    setContent {
-        CallDatabase()
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+    val viewModel = MyViewmodel2()
+        CallDatabase(myViewmodel = viewModel, scope = scope,
+            scaffoldState = scaffoldState)
+
+@Composable
+fun MainContent(){
+    Box(modifier = Modifier.fillMaxSize()){
+        val user = User(1)
+
+        val users2 = remember {
+            mutableStateListOf(user)
+        }
+        UserList(users = users2)
+        Button(onClick = { users2.add(User(1)) }, modifier = Modifier
+            .padding(25.dp)
+            .align(Alignment.BottomCenter)
+        ) {
+            Text(text = "Add one" )
+        }
     }
+
 }*/
